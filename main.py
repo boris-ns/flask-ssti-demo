@@ -54,5 +54,33 @@ def homepage():
     return render_template_string(template, data=data, form=form)
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    data = {
+        'name': 'John Smith',
+        'posts': posts
+    }
+
+    form = PostStatusForm()
+
+    if form.validate_on_submit():
+        posts.append(Post(form.status_field.data, date.today()))
+
+    return render_template('profile.html', data=data, form=form, posts=posts)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+
+    template = '''
+ <div class="center-content error">
+ <h1>Oops! That page doesn't exist.</h1>
+ <h3>%s</h3>
+ </div>
+ ''' % (request.url)
+
+    return render_template_string(template), 404
+
+
 if __name__ == '__main__':
     app.run(debug=True)
