@@ -10,18 +10,24 @@ app.config['SECRET_KEY'] = 'This is super secret key'
 
 
 class PostStatusForm(FlaskForm):
-    status_field = StringField('Status', validators=[DataRequired()])
+    status_field = StringField('Create new status', validators=[DataRequired()])
     submit = SubmitField('Post')
 
 class Post:
-    def __init__(self, text, date):
+    def __init__(self, text, date, user):
         self.text = text
         self.date = date
+        self.user = user
 
-posts = [
-    Post('This is my first post', '2019-12-10'),
-    Post('Random text for this post', '2020-10-10'),
-    Post('This is awesome app', '2020-1-10')
+homepage_posts = [
+    Post('This is my first post', '2019-12-10', 'Jane Doe'),
+    Post('Random text for this post', '2020-10-10', 'John Doe'),
+    Post('This is awesome app', '2020-1-10', 'Will Smith')
+]
+
+my_posts = [
+    Post('This is awesome app', '2020-1-10', 'John Smith'),
+    Post('Hello world!', '2020-1-10', 'John Smith')
 ]
 
 
@@ -29,13 +35,13 @@ posts = [
 def homepage():
     data = {
         'name': 'John Smith',
-        'posts': posts
+        'posts': homepage_posts
     }
 
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        posts.append(Post(form.status_field.data, date.today()))
+        homepage_posts.append(Post(form.status_field.data, date.today(), 'John Smith'))
         return redirect('/')
 
     template = '''
@@ -45,9 +51,10 @@ def homepage():
 
     for post in data['posts']:
         post_html = '''
+            <span>{}</span> -- <span>{}</span>
             <p>{}</p>
-            <p>{}</p>
-        '''.format(post.text, post.date)
+            <br />
+        '''.format(post.user, post.date, post.text)
 
         template += post_html
 
@@ -58,26 +65,25 @@ def homepage():
 def profile():
     data = {
         'name': 'John Smith',
-        'posts': posts
+        'posts': my_posts
     }
 
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        posts.append(Post(form.status_field.data, date.today()))
+        my_posts.append(Post(form.status_field.data, date.today(), 'John Smith'))
 
-    return render_template('profile.html', data=data, form=form, posts=posts)
+    return render_template('profile.html', data=data, form=form)
 
 
 @app.errorhandler(404)
 def page_not_found(e):
-
     template = '''
- <div class="center-content error">
- <h1>Oops! That page doesn't exist.</h1>
- <h3>%s</h3>
- </div>
- ''' % (request.url)
+        <div class="center-content error">
+        <h1>Oops! That page doesn't exist.</h1>
+        <h3>%s</h3>
+        </div>
+    ''' % (request.url)
 
     return render_template_string(template), 404
 
