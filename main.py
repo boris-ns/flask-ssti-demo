@@ -1,6 +1,6 @@
 from datetime import date
 
-from flask import Flask, render_template, redirect, request, render_template_string, escape
+from flask import Flask, render_template, redirect, request, render_template_string
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
@@ -44,7 +44,7 @@ def homepage():
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        my_posts.insert(0, Post(escape(form.status_field.data), date.today(), 'John Smith'))
+        my_posts.insert(0, Post(form.status_field.data, date.today(), 'John Smith'))
         return redirect('/')
 
     template = '''
