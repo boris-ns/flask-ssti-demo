@@ -1,9 +1,10 @@
 from datetime import date
 
-from flask import Flask, render_template, redirect, request, render_template_string
+from flask import Flask, render_template, redirect, request, render_template_string, escape
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from urllib.parse import unquote
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'This is super secret key'
@@ -43,7 +44,7 @@ def homepage():
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        my_posts.insert(0, Post(form.status_field.data, date.today(), 'John Smith'))
+        my_posts.insert(0, Post(escape(form.status_field.data), date.today(), 'John Smith'))
         return redirect('/')
 
     template = '''
@@ -86,9 +87,11 @@ def page_not_found(e):
     template = '''
         <div class="center-content error">
         <h1>Oops! That page doesn't exist.</h1>
-        <h3>%s</h3>
+        {{% raw %}}
+        <h3>{}</h3>
+        {{% endraw %}}
         </div>
-    ''' % request.url
+    '''.format(unquote(request.url))
 
     return render_template_string(template), 404
 
