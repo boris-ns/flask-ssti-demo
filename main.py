@@ -37,13 +37,13 @@ my_posts = [
 def homepage():
     data = {
         'name': 'John Smith',
-        'posts': homepage_posts + my_posts
+        'posts': my_posts + homepage_posts
     }
 
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        homepage_posts.append(Post(form.status_field.data, date.today(), 'John Smith'))
+        my_posts.insert(0, Post(form.status_field.data, date.today(), 'John Smith'))
         return redirect('/')
 
     template = '''
@@ -76,7 +76,7 @@ def profile():
     form = PostStatusForm()
 
     if form.validate_on_submit():
-        my_posts.append(Post(form.status_field.data, date.today(), 'John Smith'))
+        my_posts.insert(0, Post(form.status_field.data, date.today(), 'John Smith'))
 
     return render_template('profile.html', data=data, form=form)
 
@@ -88,7 +88,7 @@ def page_not_found(e):
         <h1>Oops! That page doesn't exist.</h1>
         <h3>%s</h3>
         </div>
-    ''' % (request.url)
+    ''' % request.url
 
     return render_template_string(template), 404
 
