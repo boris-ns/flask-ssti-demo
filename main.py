@@ -1,9 +1,9 @@
+from datetime import date
+
 from flask import Flask, render_template, redirect, request, render_template_string
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from datetime import date
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'This is super secret key'
@@ -13,11 +13,13 @@ class PostStatusForm(FlaskForm):
     status_field = StringField('Create new status', validators=[DataRequired()])
     submit = SubmitField('Post')
 
+
 class Post:
     def __init__(self, text, date, user):
         self.text = text
         self.date = date
         self.user = user
+
 
 homepage_posts = [
     Post('This is my first post', '2019-12-10', 'Jane Doe'),
@@ -35,7 +37,7 @@ my_posts = [
 def homepage():
     data = {
         'name': 'John Smith',
-        'posts': homepage_posts
+        'posts': homepage_posts + my_posts
     }
 
     form = PostStatusForm()
@@ -46,17 +48,19 @@ def homepage():
 
     template = '''
         {% include "home.html" %}
+        <div class="template">
         <h3>See whats new</h3>
     '''
 
     for post in data['posts']:
         post_html = '''
-            <span>{}</span> -- <span>{}</span>
+            <span class="post-user">{}</span> -- <span class="post-date">{}</span>
             <p>{}</p>
             <br />
         '''.format(post.user, post.date, post.text)
 
         template += post_html
+    template += "</div>"
 
     return render_template_string(template, data=data, form=form)
 
@@ -65,6 +69,7 @@ def homepage():
 def profile():
     data = {
         'name': 'John Smith',
+        'about': 'Hey all, welcome to my profile!',
         'posts': my_posts
     }
 

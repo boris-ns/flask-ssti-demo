@@ -1,27 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="info">
+    <h3> Profile page</h3>
+    <h1>{{ data.name }}</h1>
+    <p>{{ data.about }}</p>
+</div>
+<div class="user-posts">
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
 
-<h1> Profile page</h1>
-<h3>{{ data.name }}</h3>
+        {{ form.status_field.label }}
+        {{ form.status_field(size=100)}}
 
-<form action="" method="post" novalidate>
-    {{ form.hidden_tag() }}
+        {{ form.submit() }}
+    </form>
 
-    {{ form.status_field.label }}
-    {{ form.status_field(size=100)}}
+    <h3>My posts:</h3>
 
-    {{ form.submit() }}
-</form>
-
-<h3>My posts:</h3>
-
-{% for post in data.posts %}
-    <span>{{ post.user }}</span> -- <span>{{ post.date }}</span>     
-    <p>
-        {{ post.text }}
-    </p>
-    <br />
-{% endfor %}
+    {% for post in data.posts %}
+        <span class="post-user">{{ post.user }}</span> -- <span class="post-date">{{ post.date }}</span>
+        <p>
+            {{ post.text }}
+        </p>
+        <br />
+    {% endfor %}
+</div>
 
 {% endblock %}
